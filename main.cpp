@@ -118,32 +118,41 @@ int main()
     }
 
     GLfloat vertices[] = {
-        -0.5f,  -0.5f,  0.0f,
-        0.5f,   -0.5f,  0.0f,
-        0.0f,   0.5f,   0.0f
+         0.5f,  0.5f, 0.0f,  // top right
+         0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  // bottom left
+        -0.5f,  0.5f, 0.0f   // top left 
     };
 
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
+    GLuint indices[] = {  
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second triangle
+    };
+
+
     GLuint VAO;
     glGenVertexArrays(1, &VAO);
+    GLuint EBO;
+    glGenBuffers(1, &EBO);
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
 
-    // select vertex array
-    glBindVertexArray(VAO);
-
-    // select buffer
+    // VBO data set
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    // send data to the buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // set attribute pointer in vertex data
+    // Bind VAO
+    glBindVertexArray(VAO);
+    // Bind EBO and EBO data set
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    // VAO Attribute Pointer set
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (void*)0);
     glEnableVertexAttribArray(0);
 
 
-    GLuint  vertShader = ShaderObject("vertexshader.vert", GL_VERTEX_SHADER);
-    GLuint  fragShader = ShaderObject("fragmentshader.frag", GL_FRAGMENT_SHADER);
+    GLuint vertShader = ShaderObject("vertexshader.vert", GL_VERTEX_SHADER);
+    GLuint fragShader = ShaderObject("fragmentshader.frag", GL_FRAGMENT_SHADER);
     GLuint shaderProgram = ShaderProgram(vertShader, fragShader);
 
     /* Loop until the user closes the window */
@@ -153,9 +162,12 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //glBindVertexArray(0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
