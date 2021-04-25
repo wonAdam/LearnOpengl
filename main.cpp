@@ -3,84 +3,12 @@
 #include <sstream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#define MAX_SHADER_LENGTH 4096
 
-const char* read_shader(const char* path)
-{
-    std::ifstream file(path);
-    std::stringstream shader;
-    std::string temp;
-    if (file.is_open())
-    {
-        while (std::getline(file, temp))
-            shader << temp << '\n';
-    }
-    else
-        std::cout << "shader open error" << std::endl;
+#include "Shader.h"
 
-    char* result = new char[shader.str().length() + 1];
-    strcpy_s(result, shader.str().length() + 1, shader.str().c_str());
-    return result;
-}
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action,
-    int mode)
-{
-    // When a user presses the escape key, we set the WindowShouldClose property to true,
-    // closing the application
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
-}
-
-GLuint ShaderObject(const char* path, GLint shaderType)
-{
-    const char* source = read_shader(path);
-    std::cout << source << std::endl;
-
-    GLint shader = glCreateShader(shaderType);
-    glShaderSource(shader, 1, &source, NULL);
-    glCompileShader(shader);
-
-    {
-        GLint success;
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            char infoLog[512];
-            glGetShaderInfoLog(shader, 512, NULL, infoLog);
-            std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-        }
-    }
-
-    return shader;
-}
-
-GLuint ShaderProgram(GLuint vertShader, GLuint fragShader)
-{
-    GLuint shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertShader);
-    glAttachShader(shaderProgram, fragShader);
-    glLinkProgram(shaderProgram);
-
-    {
-        GLint success;
-        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-        if (!success) {
-            char infoLog[512];
-            glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-            std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-        }
-    }
-
-    glDeleteShader(vertShader);
-    glDeleteShader(fragShader);
-
-    return shaderProgram;
-}
-
-
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void BufferSetting(GLuint* VAO);
 
 int main()
 {
@@ -92,12 +20,11 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    glViewport(0, 0, 800, 600);
+    window = glfwCreateWindow(800, 600, "Hello World", NULL, NULL);
 
     if (!window)
     {
@@ -107,7 +34,6 @@ int main()
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
-    glfwSetKeyCallback(window, key_callback);
     
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -117,21 +43,65 @@ int main()
         exit(1);
     }
 
-    GLfloat vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
-    };
+    glViewport(0, 0, 800, 600);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    GLuint indices[] = {  
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };
-
+    glfwSetKeyCallback(window, key_callback);
 
     GLuint VAO;
-    glGenVertexArrays(1, &VAO);
+    BufferSetting(&VAO);
+
+    Shader myShader("vertexshader.vert", "fragmentshader.frag");
+
+    /* Loop until the user closes the window */
+    while (!glfwWindowShouldClose(window))
+    {
+        //------ Render ------//
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        myShader.use();
+
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return 0;
+}
+
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    // When a user presses the escape key, we set the WindowShouldClose property to true,
+    // closing the application
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+void BufferSetting(GLuint* VAO)
+{
+    GLfloat vertices[] = {
+        // positions            // colors
+        0.5f,  -0.5f,  0.0f,   1.0f,   0.0f,   0.0f,   // bottom left
+        -0.5f,  -0.5f,  0.0f,   0.0f,   1.0f,   0.0f,    // bottom right
+        0.0f,  0.5f,  0.0f,   0.0f,   0.0f,   1.0f    // top
+    };
+
+    GLuint indices[] = {
+        0, 1, 2   // first triangle
+    };
+
+
+    glGenVertexArrays(1, VAO);
     GLuint EBO;
     glGenBuffers(1, &EBO);
     GLuint VBO;
@@ -142,40 +112,15 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Bind VAO
-    glBindVertexArray(VAO);
+    glBindVertexArray(*VAO);
     // Bind EBO and EBO data set
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     // VAO Attribute Pointer set
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (void*)0);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-
-    GLuint vertShader = ShaderObject("vertexshader.vert", GL_VERTEX_SHADER);
-    GLuint fragShader = ShaderObject("fragmentshader.frag", GL_FRAGMENT_SHADER);
-    GLuint shaderProgram = ShaderProgram(vertShader, fragShader);
-
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        //glBindVertexArray(0);
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
-    }
-
-    glfwTerminate();
-    return 0;
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 }
