@@ -1,12 +1,16 @@
 #pragma once
 #include <vector>
+#include <memory>
 
 #include "GameObject.h"
+#include "Texture.h"
+#include "Shader.h"
+#include "Cube.h"
 
 class Game
 {
 private: 
-	static std::vector<GameObject*> _gameObjects;
+	std::vector<GameObject*> _gameObjects;
 	// Singletone
 	static Game instance;
 

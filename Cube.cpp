@@ -1,13 +1,9 @@
 #include "Cube.h"
 #include "Game.h"
 
-void Cube::Create(
-    const char* name, 
-    glm::vec3 position, 
-    glm::vec3 forward, 
-    glm::vec3 up)
+void Cube::Create(std::shared_ptr<Shader>& shader, std::shared_ptr<Texture>& texture, const char* name, glm::vec3 position, glm::vec3 forward, glm::vec3 up)
 {
-	Cube* cube = new Cube(name, position, forward, up);
+    Cube* cube = new Cube(name, position, forward, up);
 
     // VBO & VAO 
     glGenVertexArrays(1, &cube->VAO);
@@ -26,12 +22,13 @@ void Cube::Create(
     glEnableVertexAttribArray(1);
 
     // Shader & Texture
-    GLuint texture = GenerateTexture("doge.png");
     cube->_texture = texture;
-
-    cube->_shader.use();
-    cube->_shader.setInt("texture1", 0);
-    cube->_shader.setInt("texture2", 1);
+    cube->_shader = shader;
+    cube->_shader->use();
+    for (std::vector<GLuint>::size_type i = 0; i < texture->textures.size(); i++)
+    {
+        cube->_shader->setInt("texture" + std::to_string(i), i);
+    }
 
     // Add GameObject to the Global Game
     Game::AddGameObejct(cube);
@@ -41,25 +38,24 @@ void Cube::Update(float deltaTime)
 {
     //--- model ---//
     glm::mat4 model = glm::lookAt(_position, _position + _forward, _up);
-    _shader.setMat4("model", model);
+    _shader->setMat4("model", model);
 
     //--- view ---//
     glm::mat4 view = Camera::Instance().GetViewMatrix();
-    _shader.setMat4("view", view);
+    _shader->setMat4("view", view);
 
     //--- projection ---//
     glm::mat4 proj = glm::perspective(glm::radians(Camera::Instance().Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
-    _shader.setMat4("proj", proj);
+    _shader->setMat4("proj", proj);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _texture);
+    _texture->Bind();
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 Cube::Cube(const char* name, glm::vec3 position, glm::vec3 forward, glm::vec3 up)
-    : _shader("vertexshader.vert", "fragmentshader.frag"), GameObject(name, position, forward, up)
+    : GameObject(name, position, forward, up)
 {
 }
 
