@@ -8,7 +8,7 @@
 // Default camera values
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
-const float SPEED = 7.0f;
+const float SPEED = 10.0f;
 const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
 
@@ -17,10 +17,10 @@ class Camera
 {
 private:
     // Singletone
-    static Camera instance;
+    static Camera* instance;
 public:
     // Singletone
-    static Camera& Instance();
+    static Camera* Instance();
 
     // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
     enum Camera_Movement {
@@ -45,7 +45,7 @@ public:
     float Zoom;
 
     // constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
+    Camera(glm::vec3 position = glm::vec3(0.0f, 10.0f, 10.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
     // constructor with scalar values
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 

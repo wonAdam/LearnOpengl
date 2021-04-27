@@ -50,6 +50,12 @@
     <None Include="fragmentshader.frag">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="lightFragment.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="lightVertex.vert">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

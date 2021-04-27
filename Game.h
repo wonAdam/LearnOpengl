@@ -2,25 +2,25 @@
 #include <vector>
 #include <memory>
 
-#include "GameObject.h"
-#include "Texture.h"
-#include "Shader.h"
-#include "Cube.h"
+class GameObject;
+class Light;
 
 class Game
 {
+public:
+	static Light* _light;
 private: 
 	std::vector<GameObject*> _gameObjects;
 	// Singletone
-	static Game instance;
+	static Game* instance;
 
 public:
 	// Singletone
-	static Game& Instance();
+	static Game* Instance();
 
 	void static AddGameObejct(GameObject* go);
 	void Initialize();
-	void Update(float deltaTime);
+	void Update(float deltaTime, float gameTime);
 
 	Game();
 	virtual ~Game();

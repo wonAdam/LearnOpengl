@@ -1,8 +1,8 @@
 #include "Camera.h"
 
-Camera Camera::instance = Camera();
+Camera* Camera::instance = new Camera();
 
-Camera& Camera::Instance()
+Camera* Camera::Instance()
 {
     return instance;
 }

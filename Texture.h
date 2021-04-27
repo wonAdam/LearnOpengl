@@ -12,6 +12,9 @@ public:
 	std::vector<GLuint> textures;
 	void Bind();
 	Texture(unsigned int num, const char** path);
+	Texture(const char* path);
 	virtual ~Texture();
+private:
+	GLuint Generate_Texture(const char* path);
 };
 
