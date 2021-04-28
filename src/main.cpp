@@ -115,16 +115,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     // When a user presses the escape key, we set the WindowShouldClose property to true,
     const float cameraSpeed = 5.5f * deltaTime; // adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        Camera::Instance()->ProcessKeyboard(Camera::Camera_Movement::FORWARD, deltaTime);
+        Game::_camera->ProcessKeyboard(Camera::Camera_Movement::FORWARD, deltaTime);
     
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        Camera::Instance()->ProcessKeyboard(Camera::Camera_Movement::BACKWARD, deltaTime);
+        Game::_camera->ProcessKeyboard(Camera::Camera_Movement::BACKWARD, deltaTime);
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        Camera::Instance()->ProcessKeyboard(Camera::Camera_Movement::LEFT, deltaTime);
+        Game::_camera->ProcessKeyboard(Camera::Camera_Movement::LEFT, deltaTime);
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        Camera::Instance()->ProcessKeyboard(Camera::Camera_Movement::RIGHT, deltaTime);
+        Game::_camera->ProcessKeyboard(Camera::Camera_Movement::RIGHT, deltaTime);
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) // closing the application
         glfwSetWindowShouldClose(window, GL_TRUE);
@@ -149,12 +149,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    Camera::Instance()->ProcessMouseMovement(xoffset, yoffset);
+    Game::_camera->ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    Camera::Instance()->ProcessMouseScroll(yoffset);
+    Game::_camera->ProcessMouseScroll(yoffset);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

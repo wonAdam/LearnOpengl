@@ -13,11 +13,11 @@ void Light::Update(float deltaTime)
     _shader->SetMat4("model", model);
 
     //--- view ---//
-    glm::mat4 view = Camera::Instance()->GetViewMatrix();
+    glm::mat4 view = Game::_camera->GetViewMatrix();
     _shader->SetMat4("view", view);
 
     //--- projection ---//
-    glm::mat4 proj = glm::perspective(glm::radians(Camera::Instance()->Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(Game::_camera->_zoom), 800.0f / 600.0f, 0.1f, 100.0f);
     _shader->SetMat4("proj", proj);
 
     _shader->Use();
@@ -32,12 +32,11 @@ Light::Light(glm::vec3 lightColor,
     glm::vec3 position,
     glm::vec3 forward,
     glm::vec3 up)
-    : Cube(std::shared_ptr<Shader>(new Shader("lightVertex.vert", "lightFragment.frag")),
-        std::shared_ptr<Texture>(new Texture("default_texture.jpg")),
+    : Cube(std::shared_ptr<Shader>(new Shader("src/lightVertex.vert", "src/lightFragment.frag")),
+        std::shared_ptr<Texture>(new Texture("img/default_texture.jpg")),
         name, position, forward, up)
 {
     _lightColor = lightColor;
-    Game::_light = this;
 }
 
 Light::~Light()

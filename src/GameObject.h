@@ -3,8 +3,8 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
+// GameObject <Abstract Class>
 class GameObject
 {
 public:
@@ -14,14 +14,8 @@ public:
 	glm::vec3 _up;
 
 public:
-	void static Create(
-		const char* name = "", 
-		glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3 forward = glm::vec3(0.0f, 0.0f, 1.0f),
-		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f));
-	void virtual Update(float deltaTime);
+	void virtual Update(float deltaTime) = 0;
 	virtual ~GameObject();
-
 protected:
 	GameObject(
 		const char* name = "", 

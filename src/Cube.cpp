@@ -13,16 +13,17 @@ void Cube::Update(float deltaTime)
     _shader->SetMat4("model", model);
 
     //--- view ---//
-    glm::mat4 view = Camera::Instance()->GetViewMatrix();
+    glm::mat4 view = Game::_camera->GetViewMatrix();
     _shader->SetMat4("view", view);
 
     //--- projection ---//
-    glm::mat4 proj = glm::perspective(glm::radians(Camera::Instance()->Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(Game::_camera->_zoom), 800.0f / 600.0f, 0.1f, 100.0f);
     _shader->SetMat4("proj", proj);
 
     // Light
     _shader->SetVec3("lightColor", Game::_light->_lightColor);
     _shader->SetVec3("lightPos", Game::_light->_position);
+    _shader->SetVec3("viewPos", Game::_camera->_position);
 
     _shader->Use();
     _texture->Bind();

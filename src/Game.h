@@ -4,11 +4,13 @@
 
 class GameObject;
 class Light;
+class Camera;
 
 class Game
 {
 public:
 	static Light* _light;
+	static Camera* _camera;
 private: 
 	std::vector<GameObject*> _gameObjects;
 	// Singletone
