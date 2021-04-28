@@ -159,7 +159,6 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -178,7 +177,6 @@
     <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\stb_image.h" />
-    <ClInclude Include="src\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="img\container.jpg" />

@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+#include "stb_image.h"
+
 Shader::Shader(const char* vertexFilePath, const char* fragmentFilePath)
 {
     std::string vertexCode = read_shader(vertexFilePath);
@@ -25,7 +27,6 @@ Shader::Shader(const char* vertexFilePath, const char* fragmentFilePath)
     glLinkProgram(ID);
     check_program_link_error(ID);
 
-
     glDeleteShader(vShader);
     glDeleteShader(fShader);
 }
@@ -33,6 +34,16 @@ Shader::Shader(const char* vertexFilePath, const char* fragmentFilePath)
 void Shader::Use() const
 {
     glUseProgram(ID);
+}
+
+void Shader::BindTexture() const
+{
+    for (auto i = 0; i < _textures.size(); i++)
+    {
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, _textures[i].second);
+        SetInt(_textures[i].first, i);
+    }
 }
 
 void Shader::SetBool(const std::string& name, bool value) const
@@ -70,6 +81,12 @@ void Shader::SetVec3(const std::string& name, float v1, float v2, float v3) cons
 {
     Use();
     glUniform3f(glGetUniformLocation(ID, name.c_str()), v1, v2, v3);
+}
+
+void Shader::SetSampler2D(const std::string& name, const char* path)
+{
+    GLuint textureUnit = generate_Texture(path);
+    _textures.push_back(std::make_pair(name, textureUnit));
 }
  
 std::string Shader::read_shader(const char* path) const
@@ -111,4 +128,35 @@ void Shader::check_program_link_error(GLint program) const
         glGetProgramInfoLog(program, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
+}
+
+GLuint Shader::generate_Texture(const char* path)
+{
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_set_flip_vertically_on_load(true);
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        GLint internalFormat = nrChannels == 3 ? GL_RGB : GL_RGBA;
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, internalFormat, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+
+    stbi_image_free(data);
+
+    return texture;
 }

@@ -4,9 +4,9 @@ out vec4 FragColor;
 in vec3 vertexColor;
 in vec2 TexCoord;
   
-uniform vec3 lightColor;
+uniform vec3 diffuse;
 
 void main()
 {
-    FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    FragColor = vec4(diffuse, 1.0);
 }

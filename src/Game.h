@@ -9,8 +9,8 @@ class Camera;
 class Game
 {
 public:
-	static Light* _light;
-	static Camera* _camera;
+	static Light* gLight;
+	static Camera* gCamera;
 private: 
 	std::vector<GameObject*> _gameObjects;
 	// Singletone

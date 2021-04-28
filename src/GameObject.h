@@ -7,13 +7,21 @@
 // GameObject <Abstract Class>
 class GameObject
 {
-public:
+protected:
 	std::string _name;
 	glm::vec3 _position;
 	glm::vec3 _forward;
 	glm::vec3 _up;
 
 public:
+	const glm::vec3& GetPosition() const;
+	const glm::vec3& GetForward() const;
+	const glm::vec3& GetUp() const;
+	const std::string& GetName() const;
+	void SetPosition(glm::vec3 pos);
+	void SetForward(glm::vec3 forward);
+	void SetUp(glm::vec3 up) ;
+	void SetName(std::string name);
 	void virtual Update(float deltaTime) = 0;
 	virtual ~GameObject();
 protected:

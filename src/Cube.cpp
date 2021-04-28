@@ -3,7 +3,6 @@
 #include "Game.h"
 #include "Shader.h"
 #include "Camera.h"
-#include "Texture.h"
 #include "Light.h"
 
 void Cube::Update(float deltaTime)
@@ -13,27 +12,32 @@ void Cube::Update(float deltaTime)
     _shader->SetMat4("model", model);
 
     //--- view ---//
-    glm::mat4 view = Game::_camera->GetViewMatrix();
+    glm::mat4 view = Game::gCamera->GetViewMatrix();
     _shader->SetMat4("view", view);
 
     //--- projection ---//
-    glm::mat4 proj = glm::perspective(glm::radians(Game::_camera->_zoom), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(Game::gCamera->_zoom), 800.0f / 600.0f, 0.1f, 100.0f);
     _shader->SetMat4("proj", proj);
 
     // Light
-    _shader->SetVec3("lightColor", Game::_light->_lightColor);
-    _shader->SetVec3("lightPos", Game::_light->_position);
-    _shader->SetVec3("viewPos", Game::_camera->_position);
+    _shader->SetVec3("light.diffuse", Game::gLight->_diffuse);
+    _shader->SetVec3("light.ambient", Game::gLight->_ambient);
+    _shader->SetVec3("light.specular", Game::gLight->_specular);
+    _shader->SetVec3("light.position", Game::gLight->GetPosition());
+    _shader->SetVec3("viewPos", Game::gCamera->GetPosition());
+
+    // Material
+    _shader->SetVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    _shader->SetFloat("material.shininess", 16.0f);
 
     _shader->Use();
-    _texture->Bind();
+    _shader->BindTexture();
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-Cube::Cube(std::shared_ptr<Shader>& shader, std::shared_ptr<Texture>& texture, 
-    const char* name, glm::vec3 position, glm::vec3 forward, glm::vec3 up)
+Cube::Cube(std::shared_ptr<Shader>& shader, const char* name, glm::vec3 position, glm::vec3 forward, glm::vec3 up)
     : GameObject(name, position, forward, up)
 {
     // VBO & VAO 
@@ -55,18 +59,13 @@ Cube::Cube(std::shared_ptr<Shader>& shader, std::shared_ptr<Texture>& texture,
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    // Shader & Texture
-    _texture = texture;
+    // Shader
     _shader = shader;
-    _shader->Use();
-    for (std::vector<GLuint>::size_type i = 0; i < texture->textures.size(); i++)
-    {
-        _shader->SetInt("texture" + std::to_string(i), i);
-    }
+    
 }
 
-Cube::Cube(std::shared_ptr<Shader>&& shader, std::shared_ptr<Texture>&& texture, const char* name, glm::vec3 position, glm::vec3 forward, glm::vec3 up)
-    : Cube(shader, texture, name, position, forward, up)
+Cube::Cube(std::shared_ptr<Shader>&& shader, const char* name, glm::vec3 position, glm::vec3 forward, glm::vec3 up)
+    : Cube(shader, name, position, forward, up)
 {
 }
 

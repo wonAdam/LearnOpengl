@@ -1,15 +1,16 @@
 #include "Game.h"
 
 #include "GameObject.h"
-#include "Texture.h"
 #include "Shader.h"
 #include "Cube.h"
 #include "Light.h"
 #include "Camera.h"
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 Game* Game::instance = new Game();
-Light* Game::_light = nullptr;
-Camera* Game::_camera = nullptr;
+Light* Game::gLight = nullptr;
+Camera* Game::gCamera = nullptr;
 
 Game* Game::Instance()
 {
@@ -23,11 +24,15 @@ void Game::AddGameObejct(GameObject* go)
 
 void Game::Initialize()
 {
-    _camera = new Camera();
-    Game::AddGameObejct(_camera);
+    gCamera = new Camera();
+    //Game::AddGameObejct(gCamera);
 
-    _light = new Light(glm::vec3(1.0f, 1.0f, 1.0f), "Light", glm::vec3(5.0f, 0.0f, -5.0f));
-    Game::AddGameObejct(_light);
+    gLight = new Light(glm::vec3(1.0f, 1.0f, 1.0f), 
+        glm::vec3(0.1f, 0.1f, 0.1f),
+        glm::vec3(0.5f, 0.5f, 0.5f),
+        "Light", 
+        glm::vec3(5.0f, 0.0f, -5.0f));
+    //Game::AddGameObejct(gLight);
 
     glm::vec3 cubePositions[] = {
         glm::vec3(1.0f,  1.0f,  -5.0f),
@@ -43,17 +48,14 @@ void Game::Initialize()
     };
 
     std::shared_ptr<Shader> shader(new Shader("src/vertexshader.vert", "src/fragmentshader.frag"));
-    const char* paths[] = {
-       "img/container.jpg",
-       "img/doge.png"
-    };
-
-    std::shared_ptr<Texture> texture(new Texture(2, paths));
+    shader->SetSampler2D("texture0", "img/container2.png");
+    shader->SetSampler2D("texture1", "img/doge.png");
+    shader->SetSampler2D("material.specular", "img/container2_specular.png");
 
     int i = 0;
     for (auto& pos : cubePositions)
     {
-        GameObject* go = new Cube(shader, texture, ("Cube" + std::to_string(i++)).c_str(), pos);
+        GameObject* go = new Cube(shader, ("Cube" + std::to_string(i++)).c_str(), pos);
         Game::AddGameObejct(go);
     }
 }
@@ -62,21 +64,26 @@ void Game::Update(float deltaTime, float gameTime)
 {
     float radian = glm::radians(gameTime * 150.0f);
     float r = 5.0f;
-    Game::_light->_position = 
-        glm::vec3(0.0f, 3.0f, -5.0f) + 
-        glm::vec3(r * glm::cos(radian), 0.0f, r * glm::sin(radian));
-	
-    
+    Game::gLight->SetPosition(glm::vec3(0.0f, 3.0f, -5.0f) +
+        glm::vec3(r * glm::cos(radian), 0.0f, r * glm::sin(radian)));
+
+    Game::gLight->_diffuse.r = sin(gameTime * 2.0f);
+    Game::gLight->_diffuse.g = sin(gameTime * 0.5f);
+    Game::gLight->_diffuse.b = sin(gameTime * 1.2f);
+    Game::gLight->_ambient = glm::vec3(0.1f) * Game::gLight->_diffuse;
+
+
+    Game::gCamera->Update(deltaTime);
+    Game::gLight->Update(deltaTime);
     for (GameObject* gameObject : _gameObjects)
-		gameObject->Update(deltaTime);
+    {
+        gameObject->Update(deltaTime);
+    }
 }
 
 Game::Game()
 {
-    if (instance != nullptr)
-    {
-        delete instance;
-    }
+
 }
 
 Game::~Game()
@@ -84,8 +91,8 @@ Game::~Game()
 	for (auto& gameObject : _gameObjects)
 		delete gameObject;
 
-    if (_light != nullptr)
-        delete _light;
-    if (_camera != nullptr)
-        delete _camera;
+    if (gLight != nullptr)
+        delete gLight;
+    if (gCamera != nullptr)
+        delete gCamera;
 }
