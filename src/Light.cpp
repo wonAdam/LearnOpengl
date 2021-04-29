@@ -43,7 +43,7 @@ Light::Light(glm::vec3 direction,
             "src/lightFragment.frag")),
         name, position, forward, up)
 {
-    _position = -glm::normalize(direction) * 10.0f;
+    _position = -glm::normalize(direction) * 5.0f;
 }
 
 Light::~Light()

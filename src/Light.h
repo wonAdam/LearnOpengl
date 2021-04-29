@@ -9,6 +9,10 @@ public:
     glm::vec3 _diffuse;
     glm::vec3 _specular;
 
+    float constant = 1.0f;
+    float linear = 0.09f;
+    float quadratic = 0.032f;
+
 public:
     void virtual Update(float deltaTime) override;
     Light(glm::vec3 direction,

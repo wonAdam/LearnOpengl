@@ -43,6 +43,13 @@ void Game::Initialize()
     shader->SetSampler2D("material.specular", "img/container2_specular.png");
 
 
+    Game::AddGameObejct(new Cube(shader, "Cube1", glm::vec3(-1.0f, 1.0f, -1.0f), glm::vec3(0.5, 1.0f, 0.5f)));
+    Game::AddGameObejct(new Cube(shader, "Cube2", glm::vec3(-2.0f, 1.5f, -2.0f), glm::vec3(0.5, 1.0f, 0.3f)));
+    Game::AddGameObejct(new Cube(shader, "Cube3", glm::vec3(-2.5f, -1.0f, 1.0f), glm::vec3(0.2, 1.0f, 0.5f)));
+    Game::AddGameObejct(new Cube(shader, "Cube4", glm::vec3(-2.0f, 1.5f, 1.5f), glm::vec3(0.5, 1.2f, 1.3f)));
+    Game::AddGameObejct(new Cube(shader, "Cube5", glm::vec3(-1.5f, 1.5f, -1.5f), glm::vec3(1.5, 1.2f, 0.3f)));
+    Game::AddGameObejct(new Cube(shader, "Cube6", glm::vec3(-0.5f, -1.5f, 1.5f), glm::vec3(0.5, 1.2f, 1.3f)));
+
     Cube* c = new Cube(shader, "Cube", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f));
     Game::AddGameObejct(c);
 }
