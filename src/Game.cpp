@@ -1,12 +1,9 @@
 #include "Game.h"
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Gui.h"
 #include "GameObject.h"
 #include "Shader.h"
 #include "Cube.h"
@@ -16,6 +13,7 @@
 Game* Game::instance = new Game();
 Light* Game::gLight = nullptr;
 Camera* Game::gCamera = nullptr;
+Gui* Game::gGui = nullptr;
 
 Game* Game::Instance()
 {
@@ -29,6 +27,8 @@ void Game::AddGameObejct(GameObject* go)
 
 void Game::Initialize()
 {
+    gGui = new Gui();
+
     gCamera = new Camera();
     Game::AddGameObejct(gCamera);
 
@@ -86,42 +86,7 @@ void Game::Update(float deltaTime, float gameTime)
         gameObject->Update(deltaTime);
     }
 
-    //------ ImGui Frame ------//
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    // render your GUI
-    ImGui::Begin("Cube");
-    ImGui::Button("Hello!");
-    ImGui::SliderFloat("forwardX", &_gameObjects[2]->_forward.x, 0, 1.0f);
-    ImGui::SliderFloat("forwardY", &_gameObjects[2]->_forward.y, 0, 1.0f);
-    ImGui::SliderFloat("forwardZ", &_gameObjects[2]->_forward.z, 0, 1.0f);
-    ImGui::SliderFloat("positionX", &_gameObjects[2]->_position.x, -2.0f, 2.0f);
-    ImGui::SliderFloat("positionY", &_gameObjects[2]->_position.y, -2.0f, 2.0f);
-    ImGui::SliderFloat("positionZ", &_gameObjects[2]->_position.z, -2.0f, 2.0f);
-    ImGui::End();
-
-    ImGui::Begin("Camera");
-    std::string buttonText = gCamera->mouseMode ? "To Slide Mode" : "To Mouse Mode";
-    if (ImGui::Button(buttonText.c_str()))
-    {
-        gCamera->mouseMode = !gCamera->mouseMode;
-    }
-    if (!gCamera->mouseMode)
-    {
-        ImGui::SliderFloat("forwardX", &gCamera->_forward.x, -2.0f, 2.0f);
-        ImGui::SliderFloat("forwardY", &gCamera->_forward.y, -2.0f, 2.0f);
-        ImGui::SliderFloat("forwardZ", &gCamera->_forward.z, -2.0f, 2.0f);
-        ImGui::SliderFloat("positionX", &gCamera->_position.x, -2.0f, 2.0f);
-        ImGui::SliderFloat("positionY", &gCamera->_position.y, -2.0f, 2.0f);
-        ImGui::SliderFloat("positionZ", &gCamera->_position.z, -2.0f, 2.0f);
-    }
-    ImGui::End();
-
-    // Render dear imgui into screen
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    gGui->Update();
 }
 
 Game::Game()
@@ -134,6 +99,8 @@ Game::~Game()
 	for (auto& gameObject : _gameObjects)
 		delete gameObject;
 
+    if (gGui != nullptr)
+        delete gGui;
     if (gLight != nullptr)
         delete gLight;
     if (gCamera != nullptr)

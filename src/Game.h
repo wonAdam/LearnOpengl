@@ -5,14 +5,18 @@
 class GameObject;
 class Light;
 class Camera;
+class Gui;
 
 class Game
 {
 public:
 	static Light* gLight;
 	static Camera* gCamera;
-private: 
+	static Gui* gGui;
+public: 
 	std::vector<GameObject*> _gameObjects;
+
+private:
 	// Singletone
 	static Game* instance;
 
