@@ -28,19 +28,22 @@ void Light::Update(float deltaTime)
     glDrawArrays(GL_TRIANGLES, 0, 36);;
 }
 
-Light::Light(glm::vec3 diffuse,
+
+Light::Light(glm::vec3 direction,
+    glm::vec3 diffuse,
     glm::vec3 ambient,
     glm::vec3 specular,
     const char* name,
     glm::vec3 position,
     glm::vec3 forward,
     glm::vec3 up)
-    : _diffuse(diffuse), _ambient(ambient), _specular(specular),
+    : _direction(direction), _diffuse(diffuse), _ambient(ambient), _specular(specular),
     Cube(std::shared_ptr<Shader>(
         new Shader("src/lightVertex.vert", 
             "src/lightFragment.frag")),
         name, position, forward, up)
 {
+    _position = -glm::normalize(direction) * 10.0f;
 }
 
 Light::~Light()

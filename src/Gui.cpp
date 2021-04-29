@@ -24,7 +24,7 @@ void Gui::Update()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    GameObject* cube = Game::Instance()->_gameObjects[2];
+    GameObject* cube = Game::Instance()->_gameObjects[0];
     // render your GUI
     ImGui::Begin("Cube");
     ImGui::Button("Hello!");

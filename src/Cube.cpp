@@ -27,7 +27,7 @@ void Cube::Update(float deltaTime)
     _shader->SetVec3("light.diffuse", Game::gLight->_diffuse);
     _shader->SetVec3("light.ambient", Game::gLight->_ambient);
     _shader->SetVec3("light.specular", Game::gLight->_specular);
-    _shader->SetVec3("light.position", Game::gLight->_position);
+    _shader->SetVec3("light.direction", Game::gLight->_direction);
     _shader->SetVec3("viewPos", Game::gCamera->_position);
 
     // Material
