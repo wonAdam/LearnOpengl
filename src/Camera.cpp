@@ -30,6 +30,8 @@ void Camera::ProcessKeyboard(Camera::Camera_Movement direction, float deltaTime)
 
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
 {
+    if (!mouseMode) return;
+
     xoffset *= _mouseSensitivity;
     yoffset *= _mouseSensitivity;
 
@@ -63,6 +65,8 @@ void Camera::ProcessMouseScroll(float yoffset)
 
 void Camera::Update(float deltaTime)
 {
+    if (!mouseMode) return;
+
     // calculate the new Front vector
     glm::vec3 front;
     front.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));

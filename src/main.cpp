@@ -2,6 +2,10 @@
 #include <fstream>
 #include <sstream>
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -11,12 +15,14 @@
 
 #include "stb_image.h"
 
+
 #include "Game.h"
 #include "Cube.h"
 #include "Shader.h"
 #include "Camera.h"
 
 int glfw_Intialization(GLFWwindow** window);
+void ImGui_Initialization(GLFWwindow* window);
 int gl_Initialization();
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -39,6 +45,8 @@ int main()
     if ((error = gl_Initialization()) != 0)
         return error;
 
+    ImGui_Initialization(window);
+
     Game::Instance()->Initialize();
     
     /* Loop until the user closes the window */
@@ -53,6 +61,8 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        
+
         //------ Update ------//
         Game::Instance()->Update(deltaTime, static_cast<float>(glfwGetTime()));
 
@@ -60,8 +70,25 @@ int main()
         glfwPollEvents();
     }
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     glfwTerminate();
     return 0;
+}
+
+void ImGui_Initialization(GLFWwindow* window)
+{
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    const char* glsl_version = "#version 330";
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
 }
 
 int glfw_Intialization(GLFWwindow** window)
@@ -87,7 +114,8 @@ int glfw_Intialization(GLFWwindow** window)
     glfwMakeContextCurrent(*window);
     glfwSetFramebufferSizeCallback(*window, framebuffer_size_callback);
     glfwSetInputMode(*window, GLFW_STICKY_KEYS, GLFW_TRUE);
-    glfwSetInputMode(*window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(*window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(*window, GLFW_CURSOR, GLFW_CURSOR);
     glfwSetKeyCallback(*window, key_callback);
     glfwSetCursorPosCallback(*window, mouse_callback);
     glfwSetScrollCallback(*window, scroll_callback);
@@ -145,9 +173,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    const float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) != GLFW_PRESS)
+        return;
 
     Game::gCamera->ProcessMouseMovement(xoffset, yoffset);
 }

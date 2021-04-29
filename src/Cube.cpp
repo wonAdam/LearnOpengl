@@ -8,7 +8,11 @@
 void Cube::Update(float deltaTime)
 {
     //--- model ---//
-    glm::mat4 model = glm::lookAt(_position, _position + _forward, _up);
+    glm::mat4 model = glm::lookAt(glm::vec3(0.0f), _forward, _up);
+    float worldX = glm::dot(_position, glm::vec3(model[0]));
+    float worldY = glm::dot(_position, glm::vec3(model[1]));
+    float worldZ = glm::dot(_position, glm::vec3(model[2]));
+    model = glm::translate(model, glm::vec3(worldX, worldY, worldZ));
     _shader->SetMat4("model", model);
 
     //--- view ---//
@@ -23,8 +27,8 @@ void Cube::Update(float deltaTime)
     _shader->SetVec3("light.diffuse", Game::gLight->_diffuse);
     _shader->SetVec3("light.ambient", Game::gLight->_ambient);
     _shader->SetVec3("light.specular", Game::gLight->_specular);
-    _shader->SetVec3("light.position", Game::gLight->GetPosition());
-    _shader->SetVec3("viewPos", Game::gCamera->GetPosition());
+    _shader->SetVec3("light.position", Game::gLight->_position);
+    _shader->SetVec3("viewPos", Game::gCamera->_position);
 
     // Material
     _shader->SetVec3("material.specular", 0.5f, 0.5f, 0.5f);

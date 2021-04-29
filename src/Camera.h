@@ -33,10 +33,11 @@ public:
     float _movementSpeed;
     float _mouseSensitivity;
     float _zoom;
+    bool mouseMode = false;
 
     // constructor with vectors
-    Camera(glm::vec3 position = glm::vec3(0.0f, 10.0f, 10.0f), 
-        glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f), 
+    Camera(glm::vec3 position = glm::vec3(0.0f, 1.0f, 2.0f), 
+        glm::vec3 forward = glm::vec3(0.0f, -2.0f, -2.0f), 
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), 
         float yaw = YAW, float pitch = PITCH);
 
