@@ -5,6 +5,8 @@ class Light : public Cube
 {
 public:
     glm::vec3 _direction;
+    float _innerCutOff = 12.5f;
+    float _outerCutOff = 20.0f;
     glm::vec3 _ambient;
     glm::vec3 _diffuse;
     glm::vec3 _specular;

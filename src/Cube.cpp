@@ -28,9 +28,9 @@ void Cube::Update(float deltaTime)
     _shader->SetVec3("light.ambient", Game::gLight->_ambient);
     _shader->SetVec3("light.specular", Game::gLight->_specular);
     _shader->SetVec3("light.position", Game::gLight->_position);
-    _shader->SetFloat("light.constant", Game::gLight->constant);
-    _shader->SetFloat("light.linear", Game::gLight->linear);
-    _shader->SetFloat("light.quadratic", Game::gLight->quadratic);
+    _shader->SetVec3("light.direction", Game::gLight->_direction);
+    _shader->SetFloat("light.innerCutOff", glm::cos(glm::radians(Game::gLight->_innerCutOff)));
+    _shader->SetFloat("light.outerCutOff", glm::cos(glm::radians(Game::gLight->_outerCutOff)));
     _shader->SetVec3("viewPos", Game::gCamera->_position);
 
     // Material
