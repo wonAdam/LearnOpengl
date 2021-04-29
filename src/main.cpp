@@ -153,7 +153,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         Game::gCamera->ProcessKeyboard(Camera::Camera_Movement::RIGHT, deltaTime);
-
+    
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        Game::gCamera->ProcessKeyboard(Camera::Camera_Movement::UP, deltaTime);
+    
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        Game::gCamera->ProcessKeyboard(Camera::Camera_Movement::DOWN, deltaTime);
+    
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) // closing the application
         glfwSetWindowShouldClose(window, GL_TRUE);
 }

@@ -1,5 +1,7 @@
 #include "Gui.h"
 #include <string>
+#include <vector>
+#include <glm/glm.hpp>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -7,7 +9,10 @@
 
 #include "Game.h"
 #include "Camera.h"
-#include "Cube.h";
+#include "Cube.h"
+#include "GameObject.h"
+#include "PointLight.h"
+#include "Spotlight.h"
 
 Gui::Gui()
 {
@@ -24,37 +29,44 @@ void Gui::Update()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    GameObject* cube = Game::Instance()->_gameObjects[0];
-    // render your GUI
-    ImGui::Begin("Cube");
-    ImGui::Button("Hello!");
-    ImGui::SliderFloat("forwardX", &cube->_forward.x, 0, 1.0f);
-    ImGui::SliderFloat("forwardY", &cube->_forward.y, 0, 1.0f);
-    ImGui::SliderFloat("forwardZ", &cube->_forward.z, 0, 1.0f);
-    ImGui::SliderFloat("positionX", &cube->_position.x, -2.0f, 2.0f);
-    ImGui::SliderFloat("positionY", &cube->_position.y, -2.0f, 2.0f);
-    ImGui::SliderFloat("positionZ", &cube->_position.z, -2.0f, 2.0f);
-    ImGui::End();
+    for (auto& gameObject : Game::Instance()->_gameObjects)
+        MakePositioningPanel(gameObject);
+
+    for (auto& pl : Game::Instance()->pointLights)
+        MakePositioningPanel(static_cast<GameObject*>(pl));
+
+    for (auto& sl : Game::Instance()->spotLights)
+        MakePositioningPanel(static_cast<GameObject*>(sl));
 
     Camera* camera = Game::Instance()->gCamera;
     ImGui::Begin("Camera");
-    std::string buttonText = camera->mouseMode ? "To Slide Mode" : "To Mouse Mode";
+    std::string buttonText = camera->mouseMode ? "Docking Mode" : "To Mouse Mode";
     if (ImGui::Button(buttonText.c_str()))
     {
         camera->mouseMode = !camera->mouseMode;
-    }
-    if (!camera->mouseMode)
-    {
-        ImGui::SliderFloat("forwardX", &camera->_forward.x, -2.0f, 2.0f);
-        ImGui::SliderFloat("forwardY", &camera->_forward.y, -2.0f, 2.0f);
-        ImGui::SliderFloat("forwardZ", &camera->_forward.z, -2.0f, 2.0f);
-        ImGui::SliderFloat("positionX", &camera->_position.x, -2.0f, 2.0f);
-        ImGui::SliderFloat("positionY", &camera->_position.y, -2.0f, 2.0f);
-        ImGui::SliderFloat("positionZ", &camera->_position.z, -2.0f, 2.0f);
     }
     ImGui::End();
 
     // Render dear imgui into screen
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Gui::MakePositioningPanel(GameObject* gameObject)
+{
+    ImGui::Begin(gameObject->_name.c_str());
+    //if (ImGui::Button("Reset"))
+    //{
+    //    gameObject->_forward.x = 0.0f;
+    //    gameObject->_forward.y = 0.0f;
+    //    gameObject->_forward.z = 1.0f;
+    //    gameObject->_position = glm::vec3(0.0f);
+    //}
+    ImGui::SliderFloat("forwardX", &gameObject->_forward.x, -1.0f, 1.0f);
+    ImGui::SliderFloat("forwardY", &gameObject->_forward.y, -1.0f, 1.0f);
+    ImGui::SliderFloat("forwardZ", &gameObject->_forward.z, -1.0f, 1.0f);
+    ImGui::SliderFloat("positionX", &gameObject->_position.x, -10.0f, 10.0f);
+    ImGui::SliderFloat("positionY", &gameObject->_position.y, -10.0f, 10.0f);
+    ImGui::SliderFloat("positionZ", &gameObject->_position.z, -10.0f, 10.0f);
+    ImGui::End();
 }

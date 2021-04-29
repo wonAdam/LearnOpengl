@@ -3,7 +3,9 @@
 #include "Game.h"
 #include "Shader.h"
 #include "Camera.h"
-#include "Light.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "Spotlight.h"
 
 void Cube::Update(float deltaTime)
 {
@@ -24,13 +26,7 @@ void Cube::Update(float deltaTime)
     _shader->SetMat4("proj", proj);
 
     // Light
-    _shader->SetVec3("light.diffuse", Game::gLight->_diffuse);
-    _shader->SetVec3("light.ambient", Game::gLight->_ambient);
-    _shader->SetVec3("light.specular", Game::gLight->_specular);
-    _shader->SetVec3("light.position", Game::gLight->_position);
-    _shader->SetVec3("light.direction", Game::gLight->_direction);
-    _shader->SetFloat("light.innerCutOff", glm::cos(glm::radians(Game::gLight->_innerCutOff)));
-    _shader->SetFloat("light.outerCutOff", glm::cos(glm::radians(Game::gLight->_outerCutOff)));
+    Game::SetLightUniformValues(_shader);
     _shader->SetVec3("viewPos", Game::gCamera->_position);
 
     // Material

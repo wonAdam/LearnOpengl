@@ -88,6 +88,12 @@ void Shader::SetSampler2D(const std::string& name, const char* path)
     GLuint textureUnit = generate_Texture(path);
     _textures.push_back(std::make_pair(name, textureUnit));
 }
+
+void Shader::SetBool(const std::string& name, bool value)
+{
+    Use();
+    glUniform1i(glGetUniformLocation(ID, name.c_str()), value ? 1 : 0);
+}
  
 std::string Shader::read_shader(const char* path) const
 {
