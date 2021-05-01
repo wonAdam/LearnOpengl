@@ -15,7 +15,6 @@
 
 #include "stb_image.h"
 
-
 #include "Game.h"
 #include "Cube.h"
 #include "Shader.h"
